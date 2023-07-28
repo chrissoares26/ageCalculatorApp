@@ -141,40 +141,33 @@ async function submitInput() {
     return;
   }
   const yearToNumber = Number(yearInput.value);
-  const monthToNumber = Number(monthInput.value);
+  const monthToNumber = Number(monthInput.value) - 1; // Adjust for JavaScript's 0-indexed months
   const dayToNumber = Number(dayInput.value);
-  const date = new Date(yearToNumber, monthToNumber - 1, dayToNumber);
+  const date = new Date(yearToNumber, monthToNumber, dayToNumber);
   const currentDate = new Date();
-  console.log(date);
-  if (
-    currentDate <
-    new Date(currentDate.getFullYear(), monthToNumber - 1, dayToNumber)
-  ) {
-    years.value = currentDate.getFullYear() - date.getFullYear() - 1;
-    months.value = currentDate.getMonth() + 1;
-    days.value = currentDate.getDate() - dayToNumber;
-  } else {
-    if (currentDate.getMonth() + 1 === monthToNumber) {
-      months.value = 0;
-      days.value = currentDate.getDate() - dayToNumber;
-    } else {
-      months.value = currentDate.getMonth() + 1 - monthToNumber;
-      if (currentDate.getDate() < dayToNumber) {
-        months.value = months.value - 1;
-        days.value =
-          currentDate.getDate() -
-          new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth(),
-            0
-          ).getDate() -
-          dayToNumber;
-      } else {
-        days.value = currentDate.getDate() - dayToNumber;
-      }
-    }
-    years.value = currentDate.getFullYear() - date.getFullYear();
+
+  let yearsDiff = currentDate.getFullYear() - yearToNumber;
+  let monthsDiff = currentDate.getMonth() - monthToNumber;
+  let daysDiff = currentDate.getDate() - dayToNumber;
+
+  if (monthsDiff < 0 || (monthsDiff === 0 && daysDiff < 0)) {
+    yearsDiff--; // Subtract a year if the upcoming month/date hasn't been reached yet
+    monthsDiff += 12; // Add 12 to monthsDiff to handle negative values
   }
+
+  if (daysDiff < 0) {
+    monthsDiff--; // Subtract a month if the upcoming date hasn't been reached yet
+    let previousMonthLastDay = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      0
+    ).getDate();
+    daysDiff += previousMonthLastDay; // Add the number of days in the previous month to daysDiff to handle negative values
+  }
+
+  years.value = yearsDiff;
+  months.value = monthsDiff;
+  days.value = daysDiff;
 
   // Animate values
   await Promise.all([
