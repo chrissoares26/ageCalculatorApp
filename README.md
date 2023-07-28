@@ -27,7 +27,7 @@ Age Calculator is a simple yet useful application designed to calculate the age 
 
 1. Clone the repo
    ```bash
-   git clone https://github.com/yourusername/age-calculator.git
+   git clone https://github.com/chrissoares26/ageCalculatorApp.git
    ```
 2. Navigate into the project folder
    ```bash
